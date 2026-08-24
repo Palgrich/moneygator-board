@@ -51,22 +51,9 @@
     text-align: center;
   }
 
-  .login-logo {
-    font-size: 32px;
-    margin-bottom: 8px;
-  }
-
-  .login-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-
-  .login-sub {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 36px;
-  }
+  .login-logo { font-size: 32px; margin-bottom: 8px; }
+  .login-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .login-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 36px; }
 
   .login-input {
     width: 100%;
@@ -98,13 +85,7 @@
   }
 
   .login-btn:hover { opacity: 0.88; }
-
-  .login-error {
-    color: var(--red);
-    font-size: 13px;
-    margin-top: 10px;
-    display: none;
-  }
+  .login-error { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
 
   /* APP */
   #app { display: none; }
@@ -121,19 +102,9 @@
     z-index: 10;
   }
 
-  .topbar-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
   .topbar-logo { font-size: 22px; }
-
-  .topbar-name {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-  }
+  .topbar-name { font-size: 16px; font-weight: 700; }
 
   .topbar-tag {
     font-size: 11px;
@@ -145,11 +116,7 @@
     font-weight: 500;
   }
 
-  .topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
 
   .add-task-btn {
     background: var(--accent);
@@ -160,9 +127,6 @@
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
     transition: opacity 0.2s;
   }
 
@@ -188,7 +152,6 @@
     gap: 16px;
     padding: 24px;
     min-height: calc(100vh - 65px);
-    overflow-x: auto;
   }
 
   .column {
@@ -224,11 +187,7 @@
     color: var(--text-dim);
   }
 
-  .col-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-  }
+  .col-dot { width: 8px; height: 8px; border-radius: 50%; }
 
   .col-count {
     font-size: 12px;
@@ -245,7 +204,6 @@
     color: var(--text-muted);
     cursor: pointer;
     font-size: 18px;
-    line-height: 1;
     padding: 2px 6px;
     border-radius: 4px;
     transition: all 0.2s;
@@ -253,12 +211,7 @@
 
   .col-add:hover { background: var(--bg); color: var(--text); }
 
-  .cards {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex: 1;
-  }
+  .cards { display: flex; flex-direction: column; gap: 10px; flex: 1; }
 
   /* CARDS */
   .card {
@@ -268,17 +221,17 @@
     padding: 14px;
     cursor: grab;
     transition: all 0.15s;
-    position: relative;
   }
 
-  .card:hover {
-    border-color: var(--accent);
-    transform: translateY(-1px);
-  }
+  .card:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .card.dragging { opacity: 0.4; cursor: grabbing; }
 
-  .card.dragging {
-    opacity: 0.4;
-    cursor: grabbing;
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
   }
 
   .card-tag {
@@ -289,7 +242,7 @@
     letter-spacing: 0.5px;
     padding: 2px 8px;
     border-radius: 20px;
-    margin-bottom: 8px;
+    white-space: nowrap;
   }
 
   .card-title {
@@ -304,6 +257,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
   }
 
   .card-assignee {
@@ -323,26 +278,48 @@
     justify-content: center;
     font-size: 10px;
     font-weight: 700;
+    flex-shrink: 0;
   }
 
   .avatar-p { background: var(--accent); color: white; }
   .avatar-t { background: var(--green); color: #0F172A; }
   .avatar-b { background: var(--orange); color: #0F172A; }
 
-  .card-delete {
+  /* DEADLINE */
+  .deadline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .deadline-overdue { background: rgba(239,68,68,0.15); color: #FCA5A5; }
+  .deadline-soon    { background: rgba(245,158,11,0.15); color: #FCD34D; }
+  .deadline-ok      { background: rgba(34,197,94,0.12);  color: #86EFAC; }
+  .deadline-none    { display: none; }
+
+  .card-actions { display: flex; align-items: center; gap: 4px; }
+
+  .card-btn {
     background: none;
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    font-size: 14px;
-    padding: 2px 4px;
+    font-size: 13px;
+    padding: 3px 5px;
     border-radius: 4px;
     opacity: 0;
     transition: all 0.15s;
+    line-height: 1;
   }
 
-  .card:hover .card-delete { opacity: 1; }
-  .card-delete:hover { color: var(--red); background: rgba(239,68,68,0.1); }
+  .card:hover .card-btn { opacity: 1; }
+  .card-btn:hover { background: var(--surface); color: var(--text); }
+  .card-btn.delete:hover { color: var(--red); background: rgba(239,68,68,0.1); }
 
   /* MODAL */
   .modal-overlay {
@@ -367,15 +344,11 @@
     max-width: 440px;
   }
 
-  .modal-title {
-    font-size: 17px;
-    font-weight: 700;
-    margin-bottom: 20px;
-  }
+  .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 20px; }
 
-  .form-group {
-    margin-bottom: 16px;
-  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .form-group { margin-bottom: 14px; }
 
   .form-label {
     display: block;
@@ -384,10 +357,10 @@
     color: var(--text-dim);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
-  .form-input, .form-select, .form-textarea {
+  .form-input, .form-select {
     width: 100%;
     background: var(--bg);
     border: 1px solid var(--border);
@@ -400,15 +373,16 @@
     font-family: inherit;
   }
 
-  .form-textarea { resize: vertical; min-height: 80px; }
-  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-input:focus, .form-select:focus { border-color: var(--accent); }
   .form-select option { background: var(--surface); }
 
-  .modal-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
+  /* date input styling */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.5);
+    cursor: pointer;
   }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
 
   .btn-primary {
     flex: 1;
@@ -439,21 +413,19 @@
   .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
 
   /* TAGS */
-  .tag-product { background: rgba(91,79,232,0.2); color: #A78BFA; }
-  .tag-dev { background: rgba(165,243,252,0.15); color: var(--cyan); }
-  .tag-design { background: rgba(249,115,22,0.2); color: #FB923C; }
-  .tag-bizdev { background: rgba(34,197,94,0.2); color: var(--green); }
-  .tag-marketing { background: rgba(245,158,11,0.2); color: var(--orange); }
-  .tag-legal { background: rgba(239,68,68,0.2); color: #FCA5A5; }
+  .tag-product   { background: rgba(91,79,232,0.2);  color: #A78BFA; }
+  .tag-dev       { background: rgba(165,243,252,0.15);color: var(--cyan); }
+  .tag-design    { background: rgba(249,115,22,0.2);  color: #FB923C; }
+  .tag-bizdev    { background: rgba(34,197,94,0.2);   color: var(--green); }
+  .tag-marketing { background: rgba(245,158,11,0.2);  color: var(--orange); }
+  .tag-legal     { background: rgba(239,68,68,0.2);   color: #FCA5A5; }
 
-  @media (max-width: 900px) {
-    .board { grid-template-columns: repeat(2, 1fr); }
-  }
-
+  @media (max-width: 900px) { .board { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 540px) {
     .board { grid-template-columns: 1fr; padding: 16px; }
     .topbar { padding: 12px 16px; }
     .topbar-tag { display: none; }
+    .form-row { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -465,7 +437,8 @@
     <div class="login-logo">🐊</div>
     <div class="login-title">MoneyGator Board</div>
     <div class="login-sub">Enter password to access</div>
-    <input type="password" class="login-input" id="pwd-input" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <input type="password" class="login-input" id="pwd-input" placeholder="Password"
+      onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">Enter</button>
     <div class="login-error" id="login-error">Wrong password. Try again.</div>
   </div>
@@ -486,57 +459,49 @@
   </div>
 
   <div class="board">
-    <div class="column" id="col-backlog" ondragover="onDragOver(event)" ondrop="onDrop(event,'backlog')" ondragleave="onDragLeave(event)">
+    <div class="column" id="col-backlog"
+      ondragover="onDragOver(event)" ondrop="onDrop(event,'backlog')" ondragleave="onDragLeave(event)">
       <div class="col-header">
-        <div class="col-title">
-          <span class="col-dot" style="background:#64748B"></span>
-          Backlog
-        </div>
+        <div class="col-title"><span class="col-dot" style="background:#64748B"></span>Backlog</div>
         <div style="display:flex;gap:6px;align-items:center">
           <span class="col-count" id="count-backlog">0</span>
-          <button class="col-add" onclick="openModal('backlog')" title="Add task">+</button>
+          <button class="col-add" onclick="openModal('backlog')">+</button>
         </div>
       </div>
       <div class="cards" id="cards-backlog"></div>
     </div>
 
-    <div class="column" id="col-todo" ondragover="onDragOver(event)" ondrop="onDrop(event,'todo')" ondragleave="onDragLeave(event)">
+    <div class="column" id="col-todo"
+      ondragover="onDragOver(event)" ondrop="onDrop(event,'todo')" ondragleave="onDragLeave(event)">
       <div class="col-header">
-        <div class="col-title">
-          <span class="col-dot" style="background:#F59E0B"></span>
-          To Do
-        </div>
+        <div class="col-title"><span class="col-dot" style="background:#F59E0B"></span>To Do</div>
         <div style="display:flex;gap:6px;align-items:center">
           <span class="col-count" id="count-todo">0</span>
-          <button class="col-add" onclick="openModal('todo')" title="Add task">+</button>
+          <button class="col-add" onclick="openModal('todo')">+</button>
         </div>
       </div>
       <div class="cards" id="cards-todo"></div>
     </div>
 
-    <div class="column" id="col-inprogress" ondragover="onDragOver(event)" ondrop="onDrop(event,'inprogress')" ondragleave="onDragLeave(event)">
+    <div class="column" id="col-inprogress"
+      ondragover="onDragOver(event)" ondrop="onDrop(event,'inprogress')" ondragleave="onDragLeave(event)">
       <div class="col-header">
-        <div class="col-title">
-          <span class="col-dot" style="background:#5B4FE8"></span>
-          In Progress
-        </div>
+        <div class="col-title"><span class="col-dot" style="background:#5B4FE8"></span>In Progress</div>
         <div style="display:flex;gap:6px;align-items:center">
           <span class="col-count" id="count-inprogress">0</span>
-          <button class="col-add" onclick="openModal('inprogress')" title="Add task">+</button>
+          <button class="col-add" onclick="openModal('inprogress')">+</button>
         </div>
       </div>
       <div class="cards" id="cards-inprogress"></div>
     </div>
 
-    <div class="column" id="col-done" ondragover="onDragOver(event)" ondrop="onDrop(event,'done')" ondragleave="onDragLeave(event)">
+    <div class="column" id="col-done"
+      ondragover="onDragOver(event)" ondrop="onDrop(event,'done')" ondragleave="onDragLeave(event)">
       <div class="col-header">
-        <div class="col-title">
-          <span class="col-dot" style="background:#22C55E"></span>
-          Done
-        </div>
+        <div class="col-title"><span class="col-dot" style="background:#22C55E"></span>Done</div>
         <div style="display:flex;gap:6px;align-items:center">
           <span class="col-count" id="count-done">0</span>
-          <button class="col-add" onclick="openModal('done')" title="Add task">+</button>
+          <button class="col-add" onclick="openModal('done')">+</button>
         </div>
       </div>
       <div class="cards" id="cards-done"></div>
@@ -547,58 +512,67 @@
 <!-- MODAL -->
 <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <div class="modal-title">New task</div>
+    <div class="modal-title" id="modal-title">New task</div>
+
     <div class="form-group">
       <label class="form-label">Title</label>
       <input type="text" class="form-input" id="f-title" placeholder="What needs to be done?">
     </div>
-    <div class="form-group">
-      <label class="form-label">Column</label>
-      <select class="form-select" id="f-col">
-        <option value="backlog">Backlog</option>
-        <option value="todo">To Do</option>
-        <option value="inprogress">In Progress</option>
-        <option value="done">Done</option>
-      </select>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Column</label>
+        <select class="form-select" id="f-col">
+          <option value="backlog">Backlog</option>
+          <option value="todo">To Do</option>
+          <option value="inprogress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Deadline</label>
+        <input type="date" class="form-input" id="f-deadline">
+      </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Area</label>
-      <select class="form-select" id="f-tag">
-        <option value="product">Product</option>
-        <option value="dev">Dev</option>
-        <option value="design">Design</option>
-        <option value="bizdev">Biz Dev</option>
-        <option value="marketing">Marketing</option>
-        <option value="legal">Legal</option>
-      </select>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Area</label>
+        <select class="form-select" id="f-tag">
+          <option value="product">Product</option>
+          <option value="dev">Dev</option>
+          <option value="design">Design</option>
+          <option value="bizdev">Biz Dev</option>
+          <option value="marketing">Marketing</option>
+          <option value="legal">Legal</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Assignee</label>
+        <select class="form-select" id="f-assignee">
+          <option value="P">Pavel</option>
+          <option value="T">Tanya</option>
+          <option value="B">Both</option>
+        </select>
+      </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Assignee</label>
-      <select class="form-select" id="f-assignee">
-        <option value="P">Pavel</option>
-        <option value="T">Tanya</option>
-        <option value="B">Both</option>
-      </select>
-    </div>
+
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary" onclick="addTask()">Add task</button>
+      <button class="btn-primary" id="modal-save-btn" onclick="saveTask()">Add task</button>
     </div>
   </div>
 </div>
 
 <script>
-  // CONFIG — change password here
   const PASSWORD = 'moneygator2026';
-
-  // STATE
   let tasks = [];
   let dragId = null;
+  let editId = null;
 
   // AUTH
   function doLogin() {
-    const val = document.getElementById('pwd-input').value;
-    if (val === PASSWORD) {
+    if (document.getElementById('pwd-input').value === PASSWORD) {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       loadTasks();
@@ -615,42 +589,60 @@
   }
 
   // STORAGE
-  function saveTasks() {
-    localStorage.setItem('mg_tasks', JSON.stringify(tasks));
-  }
+  function saveTasks() { localStorage.setItem('mg_tasks_v2', JSON.stringify(tasks)); }
 
   function loadTasks() {
-    const saved = localStorage.getItem('mg_tasks');
-    if (saved) {
-      tasks = JSON.parse(saved);
-    } else {
-      tasks = getDefaultTasks();
-      saveTasks();
-    }
+    const saved = localStorage.getItem('mg_tasks_v2');
+    tasks = saved ? JSON.parse(saved) : getDefaultTasks();
+    if (!saved) saveTasks();
     renderAll();
   }
 
   function getDefaultTasks() {
     return [
-      { id: uid(), col: 'inprogress', title: 'Plaid contract — negotiate ramp terms', tag: 'bizdev', assignee: 'B' },
-      { id: uid(), col: 'inprogress', title: 'Plaid integration (Stage 4)', tag: 'dev', assignee: 'P' },
-      { id: uid(), col: 'inprogress', title: 'App rename to MoneyGator in codebase', tag: 'dev', assignee: 'P' },
-      { id: uid(), col: 'todo', title: 'Product Hunt launch', tag: 'marketing', assignee: 'P' },
-      { id: uid(), col: 'todo', title: 'Investor follow-ups (20 VCs)', tag: 'bizdev', assignee: 'P' },
-      { id: uid(), col: 'todo', title: 'Onboarding flow (Stage 3.5)', tag: 'product', assignee: 'P' },
-      { id: uid(), col: 'todo', title: 'Codebase refactor — remove dead code', tag: 'dev', assignee: 'P' },
-      { id: uid(), col: 'todo', title: 'Customer discovery with Aisha (ICP)', tag: 'product', assignee: 'B' },
-      { id: uid(), col: 'backlog', title: 'Privacy policy for App Store', tag: 'legal', assignee: 'T' },
-      { id: uid(), col: 'backlog', title: 'Stripe subscription billing setup', tag: 'dev', assignee: 'P' },
-      { id: uid(), col: 'backlog', title: 'TestFlight beta launch', tag: 'product', assignee: 'P' },
-      { id: uid(), col: 'backlog', title: 'MoneyGator Inc. legal entity registration', tag: 'legal', assignee: 'T' },
-      { id: uid(), col: 'done', title: 'Pitch deck (12 slides, OpenVC format)', tag: 'bizdev', assignee: 'B' },
-      { id: uid(), col: 'done', title: 'moneygator.app website launch', tag: 'marketing', assignee: 'P' },
-      { id: uid(), col: 'done', title: '200+ waitlist signups', tag: 'marketing', assignee: 'P' },
-      { id: uid(), col: 'done', title: 'Investor outreach — 20 VCs cold email', tag: 'bizdev', assignee: 'P' },
-      { id: uid(), col: 'done', title: 'Plaid MSA signed', tag: 'legal', assignee: 'P' },
-      { id: uid(), col: 'done', title: 'OpenVC + AngelList registration', tag: 'bizdev', assignee: 'P' },
+      { id: uid(), col: 'inprogress', title: 'Plaid contract — negotiate ramp terms',   tag: 'bizdev',    assignee: 'B', deadline: '2026-09-15' },
+      { id: uid(), col: 'inprogress', title: 'Plaid integration (Stage 4)',              tag: 'dev',       assignee: 'P', deadline: '2026-10-25' },
+      { id: uid(), col: 'inprogress', title: 'App rename to MoneyGator in codebase',    tag: 'dev',       assignee: 'P', deadline: '2026-08-30' },
+      { id: uid(), col: 'todo',       title: 'Product Hunt launch',                      tag: 'marketing', assignee: 'P', deadline: '2026-09-10' },
+      { id: uid(), col: 'todo',       title: 'Investor follow-ups (20 VCs)',             tag: 'bizdev',    assignee: 'P', deadline: '2026-09-01' },
+      { id: uid(), col: 'todo',       title: 'Onboarding flow (Stage 3.5)',              tag: 'product',   assignee: 'P', deadline: '2026-09-20' },
+      { id: uid(), col: 'todo',       title: 'Codebase refactor — remove dead code',    tag: 'dev',       assignee: 'P', deadline: '' },
+      { id: uid(), col: 'todo',       title: 'Customer discovery with Aisha (ICP)',     tag: 'product',   assignee: 'B', deadline: '2026-09-05' },
+      { id: uid(), col: 'backlog',    title: 'Privacy policy for App Store',            tag: 'legal',     assignee: 'T', deadline: '2026-10-01' },
+      { id: uid(), col: 'backlog',    title: 'Stripe subscription billing setup',       tag: 'dev',       assignee: 'P', deadline: '' },
+      { id: uid(), col: 'backlog',    title: 'TestFlight beta launch',                  tag: 'product',   assignee: 'P', deadline: '2026-10-15' },
+      { id: uid(), col: 'backlog',    title: 'MoneyGator Inc. legal entity registration',tag: 'legal',    assignee: 'T', deadline: '' },
+      { id: uid(), col: 'done',       title: 'Pitch deck (12 slides, OpenVC format)',   tag: 'bizdev',    assignee: 'B', deadline: '' },
+      { id: uid(), col: 'done',       title: 'moneygator.app website launch',           tag: 'marketing', assignee: 'P', deadline: '' },
+      { id: uid(), col: 'done',       title: '200+ waitlist signups',                   tag: 'marketing', assignee: 'P', deadline: '' },
+      { id: uid(), col: 'done',       title: 'Investor outreach — 20 VCs cold email',  tag: 'bizdev',    assignee: 'P', deadline: '' },
+      { id: uid(), col: 'done',       title: 'Plaid MSA signed',                        tag: 'legal',     assignee: 'P', deadline: '' },
+      { id: uid(), col: 'done',       title: 'OpenVC + AngelList registration',         tag: 'bizdev',    assignee: 'P', deadline: '' },
     ];
+  }
+
+  // DEADLINE HELPERS
+  function deadlineStatus(dateStr) {
+    if (!dateStr) return 'none';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const due = new Date(dateStr + 'T00:00:00');
+    const diff = Math.round((due - today) / 86400000);
+    if (diff < 0)  return 'overdue';
+    if (diff <= 5) return 'soon';
+    return 'ok';
+  }
+
+  function deadlineLabel(dateStr) {
+    if (!dateStr) return '';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const due = new Date(dateStr + 'T00:00:00');
+    const diff = Math.round((due - today) / 86400000);
+    if (diff < 0)  return `${Math.abs(diff)}d overdue`;
+    if (diff === 0) return 'Today';
+    if (diff === 1) return 'Tomorrow';
+    if (diff <= 30) return `${diff}d left`;
+    const m = due.toLocaleString('en', { month: 'short', day: 'numeric' });
+    return m;
   }
 
   // RENDER
@@ -659,7 +651,7 @@
       const container = document.getElementById('cards-' + col);
       const colTasks = tasks.filter(t => t.col === col);
       document.getElementById('count-' + col).textContent = colTasks.length;
-      container.innerHTML = colTasks.map(t => cardHTML(t)).join('');
+      container.innerHTML = colTasks.map(cardHTML).join('');
       colTasks.forEach(t => {
         const el = document.getElementById('card-' + t.id);
         el.draggable = true;
@@ -672,18 +664,29 @@
   function cardHTML(t) {
     const labels = { P: 'Pavel', T: 'Tanya', B: 'Pavel + Tanya' };
     const avatarClass = t.assignee === 'P' ? 'avatar-p' : t.assignee === 'T' ? 'avatar-t' : 'avatar-b';
-    const avatarLetter = t.assignee === 'B' ? 'B' : t.assignee;
-    const tagLabels = { product: 'Product', dev: 'Dev', design: 'Design', bizdev: 'Biz Dev', marketing: 'Marketing', legal: 'Legal' };
+    const tagLabels = { product:'Product', dev:'Dev', design:'Design', bizdev:'Biz Dev', marketing:'Marketing', legal:'Legal' };
+    const ds = deadlineStatus(t.deadline);
+    const dl = deadlineLabel(t.deadline);
+    const icons = { overdue: '🔴', soon: '⚠️', ok: '📅' };
+    const deadlineHTML = ds !== 'none'
+      ? `<span class="deadline deadline-${ds}">${icons[ds]} ${dl}</span>`
+      : '';
     return `
       <div class="card" id="card-${t.id}">
-        <span class="card-tag tag-${t.tag}">${tagLabels[t.tag] || t.tag}</span>
+        <div class="card-top">
+          <span class="card-tag tag-${t.tag}">${tagLabels[t.tag] || t.tag}</span>
+          <div class="card-actions">
+            <button class="card-btn" onclick="openEditModal('${t.id}')" title="Edit">✏️</button>
+            <button class="card-btn delete" onclick="deleteTask('${t.id}')" title="Delete">✕</button>
+          </div>
+        </div>
         <div class="card-title">${t.title}</div>
         <div class="card-footer">
           <div class="card-assignee">
-            <div class="avatar ${avatarClass}">${avatarLetter}</div>
+            <div class="avatar ${avatarClass}">${t.assignee}</div>
             ${labels[t.assignee]}
           </div>
-          <button class="card-delete" onclick="deleteTask('${t.id}')" title="Delete">✕</button>
+          ${deadlineHTML}
         </div>
       </div>`;
   }
@@ -699,14 +702,8 @@
     document.querySelectorAll('.column').forEach(c => c.classList.remove('drag-over'));
   }
 
-  function onDragOver(e) {
-    e.preventDefault();
-    e.currentTarget.classList.add('drag-over');
-  }
-
-  function onDragLeave(e) {
-    e.currentTarget.classList.remove('drag-over');
-  }
+  function onDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+  function onDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
 
   function onDrop(e, col) {
     e.preventDefault();
@@ -718,51 +715,64 @@
   }
 
   // MODAL
-  let defaultCol = 'todo';
-
   function openModal(col) {
-    defaultCol = col || 'todo';
-    document.getElementById('f-col').value = defaultCol;
+    editId = null;
+    document.getElementById('modal-title').textContent = 'New task';
+    document.getElementById('modal-save-btn').textContent = 'Add task';
     document.getElementById('f-title').value = '';
+    document.getElementById('f-col').value = col || 'todo';
+    document.getElementById('f-tag').value = 'product';
+    document.getElementById('f-assignee').value = 'P';
+    document.getElementById('f-deadline').value = '';
     document.getElementById('modal').classList.add('open');
     setTimeout(() => document.getElementById('f-title').focus(), 100);
   }
 
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
+  function openEditModal(id) {
+    const t = tasks.find(x => x.id === id);
+    if (!t) return;
+    editId = id;
+    document.getElementById('modal-title').textContent = 'Edit task';
+    document.getElementById('modal-save-btn').textContent = 'Save changes';
+    document.getElementById('f-title').value = t.title;
+    document.getElementById('f-col').value = t.col;
+    document.getElementById('f-tag').value = t.tag;
+    document.getElementById('f-assignee').value = t.assignee;
+    document.getElementById('f-deadline').value = t.deadline || '';
+    document.getElementById('modal').classList.add('open');
+    setTimeout(() => document.getElementById('f-title').focus(), 100);
   }
 
-  function addTask() {
+  function closeModal() { document.getElementById('modal').classList.remove('open'); editId = null; }
+
+  function saveTask() {
     const title = document.getElementById('f-title').value.trim();
     if (!title) { document.getElementById('f-title').focus(); return; }
-    tasks.unshift({
-      id: uid(),
-      col: document.getElementById('f-col').value,
+    const data = {
+      col:      document.getElementById('f-col').value,
       title,
-      tag: document.getElementById('f-tag').value,
+      tag:      document.getElementById('f-tag').value,
       assignee: document.getElementById('f-assignee').value,
-    });
-    saveTasks();
-    renderAll();
-    closeModal();
+      deadline: document.getElementById('f-deadline').value,
+    };
+    if (editId) {
+      const idx = tasks.findIndex(t => t.id === editId);
+      if (idx !== -1) tasks[idx] = { ...tasks[idx], ...data };
+    } else {
+      tasks.unshift({ id: uid(), ...data });
+    }
+    saveTasks(); renderAll(); closeModal();
   }
 
   function deleteTask(id) {
     if (!confirm('Delete this task?')) return;
     tasks = tasks.filter(t => t.id !== id);
-    saveTasks();
-    renderAll();
+    saveTasks(); renderAll();
   }
 
-  // UTILS
-  function uid() {
-    return Math.random().toString(36).slice(2, 10);
-  }
+  function uid() { return Math.random().toString(36).slice(2, 10); }
 
-  // KEYBOARD
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
-  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
 </body>
 </html>
