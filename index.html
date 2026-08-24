@@ -100,6 +100,8 @@
     position: sticky;
     top: 0;
     z-index: 10;
+    flex-wrap: wrap;
+    gap: 12px;
   }
 
   .topbar-left { display: flex; align-items: center; gap: 10px; }
@@ -145,13 +147,49 @@
 
   .logout-btn:hover { border-color: var(--text-muted); color: var(--text); }
 
+  /* TABS */
+  .tabs-bar {
+    display: flex;
+    gap: 8px;
+    padding: 14px 24px 0 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tab-btn:hover { color: var(--text); }
+
+  .tab-btn.active {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-lock { font-size: 12px; opacity: 0.7; }
+
   /* BOARD */
+  .board-view { display: none; }
+  .board-view.active { display: block; }
+
   .board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     padding: 24px;
-    min-height: calc(100vh - 65px);
+    min-height: calc(100vh - 118px);
   }
 
   .column {
@@ -300,7 +338,6 @@
   .deadline-overdue { background: rgba(239,68,68,0.15); color: #FCA5A5; }
   .deadline-soon    { background: rgba(245,158,11,0.15); color: #FCD34D; }
   .deadline-ok      { background: rgba(34,197,94,0.12);  color: #86EFAC; }
-  .deadline-none    { display: none; }
 
   .card-actions { display: flex; align-items: center; gap: 4px; }
 
@@ -376,7 +413,6 @@
   .form-input:focus, .form-select:focus { border-color: var(--accent); }
   .form-select option { background: var(--surface); }
 
-  /* date input styling */
   input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(0.5);
     cursor: pointer;
@@ -419,6 +455,8 @@
   .tag-bizdev    { background: rgba(34,197,94,0.2);   color: var(--green); }
   .tag-marketing { background: rgba(245,158,11,0.2);  color: var(--orange); }
   .tag-legal     { background: rgba(239,68,68,0.2);   color: #FCA5A5; }
+  .tag-finance   { background: rgba(168,85,247,0.2);  color: #D8B4FE; }
+  .tag-strategy  { background: rgba(236,72,153,0.2);  color: #F9A8D4; }
 
   @media (max-width: 900px) { .board { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 540px) {
@@ -426,6 +464,7 @@
     .topbar { padding: 12px 16px; }
     .topbar-tag { display: none; }
     .form-row { grid-template-columns: 1fr; }
+    .tabs-bar { padding: 12px 16px 0 16px; }
   }
 </style>
 </head>
@@ -458,54 +497,19 @@
     </div>
   </div>
 
-  <div class="board">
-    <div class="column" id="col-backlog"
-      ondragover="onDragOver(event)" ondrop="onDrop(event,'backlog')" ondragleave="onDragLeave(event)">
-      <div class="col-header">
-        <div class="col-title"><span class="col-dot" style="background:#64748B"></span>Backlog</div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span class="col-count" id="count-backlog">0</span>
-          <button class="col-add" onclick="openModal('backlog')">+</button>
-        </div>
-      </div>
-      <div class="cards" id="cards-backlog"></div>
-    </div>
+  <div class="tabs-bar">
+    <button class="tab-btn active" id="tab-general" onclick="switchTab('general')">General</button>
+    <button class="tab-btn" id="tab-founders" onclick="switchTab('founders')">
+      Founders Level <span class="tab-lock">🔒</span>
+    </button>
+  </div>
 
-    <div class="column" id="col-todo"
-      ondragover="onDragOver(event)" ondrop="onDrop(event,'todo')" ondragleave="onDragLeave(event)">
-      <div class="col-header">
-        <div class="col-title"><span class="col-dot" style="background:#F59E0B"></span>To Do</div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span class="col-count" id="count-todo">0</span>
-          <button class="col-add" onclick="openModal('todo')">+</button>
-        </div>
-      </div>
-      <div class="cards" id="cards-todo"></div>
-    </div>
+  <div class="board-view active" id="view-general">
+    <div class="board" id="board-general"></div>
+  </div>
 
-    <div class="column" id="col-inprogress"
-      ondragover="onDragOver(event)" ondrop="onDrop(event,'inprogress')" ondragleave="onDragLeave(event)">
-      <div class="col-header">
-        <div class="col-title"><span class="col-dot" style="background:#5B4FE8"></span>In Progress</div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span class="col-count" id="count-inprogress">0</span>
-          <button class="col-add" onclick="openModal('inprogress')">+</button>
-        </div>
-      </div>
-      <div class="cards" id="cards-inprogress"></div>
-    </div>
-
-    <div class="column" id="col-done"
-      ondragover="onDragOver(event)" ondrop="onDrop(event,'done')" ondragleave="onDragLeave(event)">
-      <div class="col-header">
-        <div class="col-title"><span class="col-dot" style="background:#22C55E"></span>Done</div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span class="col-count" id="count-done">0</span>
-          <button class="col-add" onclick="openModal('done')">+</button>
-        </div>
-      </div>
-      <div class="cards" id="cards-done"></div>
-    </div>
+  <div class="board-view" id="view-founders">
+    <div class="board" id="board-founders"></div>
   </div>
 </div>
 
@@ -545,6 +549,8 @@
           <option value="bizdev">Biz Dev</option>
           <option value="marketing">Marketing</option>
           <option value="legal">Legal</option>
+          <option value="finance">Finance</option>
+          <option value="strategy">Strategy</option>
         </select>
       </div>
       <div class="form-group">
@@ -566,7 +572,16 @@
 
 <script>
   const PASSWORD = 'moneygator2026';
-  let tasks = [];
+  const COLUMNS = ['backlog','todo','inprogress','done'];
+  const COLUMN_META = {
+    backlog:    { label: 'Backlog',     dot: '#64748B' },
+    todo:       { label: 'To Do',       dot: '#F59E0B' },
+    inprogress: { label: 'In Progress', dot: '#5B4FE8' },
+    done:       { label: 'Done',        dot: '#22C55E' },
+  };
+
+  let boards = { general: [], founders: [] };
+  let currentTab = 'general';
   let dragId = null;
   let editId = null;
 
@@ -575,7 +590,7 @@
     if (document.getElementById('pwd-input').value === PASSWORD) {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
-      loadTasks();
+      loadBoards();
     } else {
       document.getElementById('login-error').style.display = 'block';
       document.getElementById('pwd-input').value = '';
@@ -588,37 +603,76 @@
     document.getElementById('pwd-input').value = '';
   }
 
-  // STORAGE
-  function saveTasks() { localStorage.setItem('mg_tasks_v2', JSON.stringify(tasks)); }
+  // TABS
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tab-general').classList.toggle('active', tab === 'general');
+    document.getElementById('tab-founders').classList.toggle('active', tab === 'founders');
+    document.getElementById('view-general').classList.toggle('active', tab === 'general');
+    document.getElementById('view-founders').classList.toggle('active', tab === 'founders');
+  }
 
-  function loadTasks() {
-    const saved = localStorage.getItem('mg_tasks_v2');
-    tasks = saved ? JSON.parse(saved) : getDefaultTasks();
-    if (!saved) saveTasks();
+  // STORAGE
+  function saveBoards() { localStorage.setItem('mg_boards_v1', JSON.stringify(boards)); }
+
+  function loadBoards() {
+    const saved = localStorage.getItem('mg_boards_v1');
+    if (saved) {
+      boards = JSON.parse(saved);
+    } else {
+      boards = getDefaultBoards();
+      saveBoards();
+    }
+    buildColumns('general');
+    buildColumns('founders');
     renderAll();
   }
 
-  function getDefaultTasks() {
-    return [
-      { id: uid(), col: 'inprogress', title: 'Plaid contract — negotiate ramp terms',   tag: 'bizdev',    assignee: 'B', deadline: '2026-09-15' },
-      { id: uid(), col: 'inprogress', title: 'Plaid integration (Stage 4)',              tag: 'dev',       assignee: 'P', deadline: '2026-10-25' },
-      { id: uid(), col: 'inprogress', title: 'App rename to MoneyGator in codebase',    tag: 'dev',       assignee: 'P', deadline: '2026-08-30' },
-      { id: uid(), col: 'todo',       title: 'Product Hunt launch',                      tag: 'marketing', assignee: 'P', deadline: '2026-09-10' },
-      { id: uid(), col: 'todo',       title: 'Investor follow-ups (20 VCs)',             tag: 'bizdev',    assignee: 'P', deadline: '2026-09-01' },
-      { id: uid(), col: 'todo',       title: 'Onboarding flow (Stage 3.5)',              tag: 'product',   assignee: 'P', deadline: '2026-09-20' },
-      { id: uid(), col: 'todo',       title: 'Codebase refactor — remove dead code',    tag: 'dev',       assignee: 'P', deadline: '' },
-      { id: uid(), col: 'todo',       title: 'Customer discovery with Aisha (ICP)',     tag: 'product',   assignee: 'B', deadline: '2026-09-05' },
-      { id: uid(), col: 'backlog',    title: 'Privacy policy for App Store',            tag: 'legal',     assignee: 'T', deadline: '2026-10-01' },
-      { id: uid(), col: 'backlog',    title: 'Stripe subscription billing setup',       tag: 'dev',       assignee: 'P', deadline: '' },
-      { id: uid(), col: 'backlog',    title: 'TestFlight beta launch',                  tag: 'product',   assignee: 'P', deadline: '2026-10-15' },
-      { id: uid(), col: 'backlog',    title: 'MoneyGator Inc. legal entity registration',tag: 'legal',    assignee: 'T', deadline: '' },
-      { id: uid(), col: 'done',       title: 'Pitch deck (12 slides, OpenVC format)',   tag: 'bizdev',    assignee: 'B', deadline: '' },
-      { id: uid(), col: 'done',       title: 'moneygator.app website launch',           tag: 'marketing', assignee: 'P', deadline: '' },
-      { id: uid(), col: 'done',       title: '200+ waitlist signups',                   tag: 'marketing', assignee: 'P', deadline: '' },
-      { id: uid(), col: 'done',       title: 'Investor outreach — 20 VCs cold email',  tag: 'bizdev',    assignee: 'P', deadline: '' },
-      { id: uid(), col: 'done',       title: 'Plaid MSA signed',                        tag: 'legal',     assignee: 'P', deadline: '' },
-      { id: uid(), col: 'done',       title: 'OpenVC + AngelList registration',         tag: 'bizdev',    assignee: 'P', deadline: '' },
-    ];
+  function buildColumns(tab) {
+    const container = document.getElementById('board-' + tab);
+    container.innerHTML = COLUMNS.map(col => `
+      <div class="column" id="col-${tab}-${col}"
+        ondragover="onDragOver(event)" ondrop="onDrop(event,'${tab}','${col}')" ondragleave="onDragLeave(event)">
+        <div class="col-header">
+          <div class="col-title"><span class="col-dot" style="background:${COLUMN_META[col].dot}"></span>${COLUMN_META[col].label}</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="col-count" id="count-${tab}-${col}">0</span>
+            <button class="col-add" onclick="openModal('${col}')">+</button>
+          </div>
+        </div>
+        <div class="cards" id="cards-${tab}-${col}"></div>
+      </div>
+    `).join('');
+  }
+
+  function getDefaultBoards() {
+    return {
+      general: [
+        { id: uid(), col: 'inprogress', title: 'Plaid integration (Stage 4)',              tag: 'dev',       assignee: 'P', deadline: '2026-10-25' },
+        { id: uid(), col: 'inprogress', title: 'App rename to MoneyGator in codebase',    tag: 'dev',       assignee: 'P', deadline: '2026-08-30' },
+        { id: uid(), col: 'todo',       title: 'Product Hunt launch',                      tag: 'marketing', assignee: 'P', deadline: '2026-09-10' },
+        { id: uid(), col: 'todo',       title: 'Onboarding flow (Stage 3.5)',              tag: 'product',   assignee: 'P', deadline: '2026-09-20' },
+        { id: uid(), col: 'todo',       title: 'Codebase refactor — remove dead code',    tag: 'dev',       assignee: 'P', deadline: '' },
+        { id: uid(), col: 'todo',       title: 'Customer discovery with Aisha (ICP)',     tag: 'product',   assignee: 'B', deadline: '2026-09-05' },
+        { id: uid(), col: 'backlog',    title: 'Privacy policy for App Store',            tag: 'legal',     assignee: 'T', deadline: '2026-10-01' },
+        { id: uid(), col: 'backlog',    title: 'Stripe subscription billing setup',       tag: 'dev',       assignee: 'P', deadline: '' },
+        { id: uid(), col: 'backlog',    title: 'TestFlight beta launch',                  tag: 'product',   assignee: 'P', deadline: '2026-10-15' },
+        { id: uid(), col: 'done',       title: 'moneygator.app website launch',           tag: 'marketing', assignee: 'P', deadline: '' },
+        { id: uid(), col: 'done',       title: '200+ waitlist signups',                   tag: 'marketing', assignee: 'P', deadline: '' },
+      ],
+      founders: [
+        { id: uid(), col: 'inprogress', title: 'Plaid contract — negotiate ramp terms',   tag: 'bizdev',    assignee: 'B', deadline: '2026-09-15' },
+        { id: uid(), col: 'todo',       title: 'Investor follow-ups (20 VCs)',             tag: 'bizdev',    assignee: 'P', deadline: '2026-09-01' },
+        { id: uid(), col: 'todo',       title: 'MoneyGator Inc. legal entity registration',tag: 'legal',    assignee: 'T', deadline: '' },
+        { id: uid(), col: 'todo',       title: 'Fundraise strategy — post Plaid signature',tag: 'strategy', assignee: 'B', deadline: '' },
+        { id: uid(), col: 'backlog',    title: 'Cap table setup',                          tag: 'finance',   assignee: 'T', deadline: '' },
+        { id: uid(), col: 'backlog',    title: 'Founder equity split agreement',           tag: 'legal',     assignee: 'B', deadline: '' },
+        { id: uid(), col: 'done',       title: 'Pitch deck (12 slides, OpenVC format)',   tag: 'bizdev',    assignee: 'B', deadline: '' },
+        { id: uid(), col: 'done',       title: 'Investor outreach — 20 VCs cold email',  tag: 'bizdev',    assignee: 'P', deadline: '' },
+        { id: uid(), col: 'done',       title: 'Plaid MSA reviewed',                      tag: 'legal',     assignee: 'P', deadline: '' },
+        { id: uid(), col: 'done',       title: 'OpenVC + AngelList registration',         tag: 'bizdev',    assignee: 'P', deadline: '' },
+      ],
+    };
   }
 
   // DEADLINE HELPERS
@@ -641,22 +695,23 @@
     if (diff === 0) return 'Today';
     if (diff === 1) return 'Tomorrow';
     if (diff <= 30) return `${diff}d left`;
-    const m = due.toLocaleString('en', { month: 'short', day: 'numeric' });
-    return m;
+    return due.toLocaleString('en', { month: 'short', day: 'numeric' });
   }
 
   // RENDER
   function renderAll() {
-    ['backlog','todo','inprogress','done'].forEach(col => {
-      const container = document.getElementById('cards-' + col);
-      const colTasks = tasks.filter(t => t.col === col);
-      document.getElementById('count-' + col).textContent = colTasks.length;
-      container.innerHTML = colTasks.map(cardHTML).join('');
-      colTasks.forEach(t => {
-        const el = document.getElementById('card-' + t.id);
-        el.draggable = true;
-        el.addEventListener('dragstart', () => onDragStart(t.id));
-        el.addEventListener('dragend', onDragEnd);
+    ['general','founders'].forEach(tab => {
+      COLUMNS.forEach(col => {
+        const container = document.getElementById(`cards-${tab}-${col}`);
+        const colTasks = boards[tab].filter(t => t.col === col);
+        document.getElementById(`count-${tab}-${col}`).textContent = colTasks.length;
+        container.innerHTML = colTasks.map(t => cardHTML(t, tab)).join('');
+        colTasks.forEach(t => {
+          const el = document.getElementById('card-' + t.id);
+          el.draggable = true;
+          el.addEventListener('dragstart', () => onDragStart(t.id, tab));
+          el.addEventListener('dragend', onDragEnd);
+        });
       });
     });
   }
@@ -664,13 +719,11 @@
   function cardHTML(t) {
     const labels = { P: 'Pavel', T: 'Tanya', B: 'Pavel + Tanya' };
     const avatarClass = t.assignee === 'P' ? 'avatar-p' : t.assignee === 'T' ? 'avatar-t' : 'avatar-b';
-    const tagLabels = { product:'Product', dev:'Dev', design:'Design', bizdev:'Biz Dev', marketing:'Marketing', legal:'Legal' };
+    const tagLabels = { product:'Product', dev:'Dev', design:'Design', bizdev:'Biz Dev', marketing:'Marketing', legal:'Legal', finance:'Finance', strategy:'Strategy' };
     const ds = deadlineStatus(t.deadline);
     const dl = deadlineLabel(t.deadline);
     const icons = { overdue: '🔴', soon: '⚠️', ok: '📅' };
-    const deadlineHTML = ds !== 'none'
-      ? `<span class="deadline deadline-${ds}">${icons[ds]} ${dl}</span>`
-      : '';
+    const deadlineHTML = ds !== 'none' ? `<span class="deadline deadline-${ds}">${icons[ds]} ${dl}</span>` : '';
     return `
       <div class="card" id="card-${t.id}">
         <div class="card-top">
@@ -692,8 +745,8 @@
   }
 
   // DRAG
-  function onDragStart(id) {
-    dragId = id;
+  function onDragStart(id, tab) {
+    dragId = { id, tab };
     setTimeout(() => document.getElementById('card-' + id)?.classList.add('dragging'), 0);
   }
 
@@ -705,12 +758,12 @@
   function onDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
   function onDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
 
-  function onDrop(e, col) {
+  function onDrop(e, tab, col) {
     e.preventDefault();
     e.currentTarget.classList.remove('drag-over');
-    if (!dragId) return;
-    const task = tasks.find(t => t.id === dragId);
-    if (task) { task.col = col; saveTasks(); renderAll(); }
+    if (!dragId || dragId.tab !== tab) { dragId = null; return; }
+    const task = boards[tab].find(t => t.id === dragId.id);
+    if (task) { task.col = col; saveBoards(); renderAll(); }
     dragId = null;
   }
 
@@ -729,7 +782,7 @@
   }
 
   function openEditModal(id) {
-    const t = tasks.find(x => x.id === id);
+    const t = boards[currentTab].find(x => x.id === id);
     if (!t) return;
     editId = id;
     document.getElementById('modal-title').textContent = 'Edit task';
@@ -756,18 +809,18 @@
       deadline: document.getElementById('f-deadline').value,
     };
     if (editId) {
-      const idx = tasks.findIndex(t => t.id === editId);
-      if (idx !== -1) tasks[idx] = { ...tasks[idx], ...data };
+      const idx = boards[currentTab].findIndex(t => t.id === editId);
+      if (idx !== -1) boards[currentTab][idx] = { ...boards[currentTab][idx], ...data };
     } else {
-      tasks.unshift({ id: uid(), ...data });
+      boards[currentTab].unshift({ id: uid(), ...data });
     }
-    saveTasks(); renderAll(); closeModal();
+    saveBoards(); renderAll(); closeModal();
   }
 
   function deleteTask(id) {
     if (!confirm('Delete this task?')) return;
-    tasks = tasks.filter(t => t.id !== id);
-    saveTasks(); renderAll();
+    boards[currentTab] = boards[currentTab].filter(t => t.id !== id);
+    saveBoards(); renderAll();
   }
 
   function uid() { return Math.random().toString(36).slice(2, 10); }
