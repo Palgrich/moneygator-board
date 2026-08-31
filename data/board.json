@@ -195,6 +195,14 @@
   ],
   "founders": [
     {
+      "id": "o42u4237",
+      "col": "backlog",
+      "title": "Сказать своей Мусе-пуск какая она мусьная",
+      "tag": "strategy",
+      "assignee": "P",
+      "deadline": "2026-08-30"
+    },
+    {
       "id": "gv8winj3",
       "col": "inprogress",
       "title": "Plaid contract — negotiate ramp terms",
