@@ -619,6 +619,7 @@
     const saved = localStorage.getItem('mg_boards_v1');
     if (saved) {
       boards = JSON.parse(saved);
+      applySeedUpdates();
     } else {
       boards = getDefaultBoards();
       saveBoards();
@@ -626,6 +627,44 @@
     buildColumns('general');
     buildColumns('founders');
     renderAll();
+  }
+
+  // Seed updates: add new cards / move known cards, once per version.
+  // Safe for localStorage users — never touches cards you created or edited.
+  const SEED_VERSION = 2;
+  function applySeedUpdates() {
+    const applied = Number(localStorage.getItem('mg_seed_version') || 1);
+    if (applied >= SEED_VERSION) return;
+
+    const titleIn = (tab, t) => boards[tab].some(x => x.title === t);
+    const moveIfExists = (tab, title, col) => {
+      const t = boards[tab].find(x => x.title === title);
+      if (t && t.col !== 'done') t.col = col;
+    };
+    const addIfMissing = (tab, card) => {
+      if (!titleIn(tab, card.title)) boards[tab].unshift({ id: uid(), ...card });
+    };
+
+    // v2 — Plaid sandbox milestone (Aug 30, 2026)
+    moveIfExists('general', 'App rename to MoneyGator in codebase', 'done');
+    moveIfExists('general', 'Codebase refactor — remove dead code', 'done');
+    addIfMissing('general', { col: 'done', title: 'Plaid sandbox end-to-end: server → tunnel → app', tag: 'dev', assignee: 'P', deadline: '' });
+    addIfMissing('general', { col: 'done', title: 'Frontend cleanup: 14 screens, 24 components, -8,932 lines', tag: 'dev', assignee: 'P', deadline: '' });
+    addIfMissing('general', { col: 'done', title: 'Insight engine: InsightCard on Progress, Because line on Learn', tag: 'product', assignee: 'P', deadline: '' });
+    addIfMissing('general', { col: 'inprogress', title: 'Wire Transactions, TransactionDetail, SubscriptionDetail, Notifications to live', tag: 'dev', assignee: 'P', deadline: '2026-09-02' });
+    addIfMissing('general', { col: 'todo', title: 'Plaid Link: real "Connect bank" button (needs Expo Dev Client)', tag: 'dev', assignee: 'P', deadline: '2026-09-15' });
+    addIfMissing('general', { col: 'todo', title: 'Backend: /liabilities endpoint (credit card due dates, min payment)', tag: 'dev', assignee: 'P', deadline: '2026-09-08' });
+    addIfMissing('general', { col: 'todo', title: 'CancelGuide screen: step-by-step unsubscribe per merchant', tag: 'product', assignee: 'P', deadline: '2026-09-12' });
+    addIfMissing('general', { col: 'todo', title: 'Store Plaid access_token in PostgreSQL per user (replace in-memory)', tag: 'dev', assignee: 'P', deadline: '2026-09-20' });
+    addIfMissing('general', { col: 'backlog', title: 'Onboarding: question → number → Connect bank (no login first)', tag: 'product', assignee: 'P', deadline: '' });
+    addIfMissing('general', { col: 'backlog', title: 'Money Saved counter on Progress', tag: 'product', assignee: 'P', deadline: '' });
+    addIfMissing('general', { col: 'backlog', title: 'Gator character states (5 states, replaces score)', tag: 'design', assignee: 'B', deadline: '' });
+    addIfMissing('general', { col: 'backlog', title: 'Streak: days without slips (late fee, overdraft, missed payment)', tag: 'product', assignee: 'P', deadline: '' });
+    addIfMissing('general', { col: 'backlog', title: 'Push notifications from Plaid webhooks (payday, due date, unused sub)', tag: 'dev', assignee: 'P', deadline: '' });
+    addIfMissing('founders', { col: 'todo', title: 'Email Justin Guerrero (Plaid): extend ramp 9→12 mo, early termination clause', tag: 'bizdev', assignee: 'P', deadline: '2026-09-05' });
+
+    localStorage.setItem('mg_seed_version', String(SEED_VERSION));
+    saveBoards();
   }
 
   function buildColumns(tab) {
@@ -649,10 +688,23 @@
     return {
       general: [
         { id: uid(), col: 'inprogress', title: 'Plaid integration (Stage 4)',              tag: 'dev',       assignee: 'P', deadline: '2026-10-25' },
-        { id: uid(), col: 'inprogress', title: 'App rename to MoneyGator in codebase',    tag: 'dev',       assignee: 'P', deadline: '2026-08-30' },
+        { id: uid(), col: 'inprogress', title: 'Wire Transactions, TransactionDetail, SubscriptionDetail, Notifications to live', tag: 'dev', assignee: 'P', deadline: '2026-09-02' },
+        { id: uid(), col: 'todo',       title: 'Plaid Link: real "Connect bank" button (needs Expo Dev Client)', tag: 'dev', assignee: 'P', deadline: '2026-09-15' },
+        { id: uid(), col: 'todo',       title: 'Backend: /liabilities endpoint (credit card due dates, min payment)', tag: 'dev', assignee: 'P', deadline: '2026-09-08' },
+        { id: uid(), col: 'todo',       title: 'CancelGuide screen: step-by-step unsubscribe per merchant', tag: 'product', assignee: 'P', deadline: '2026-09-12' },
+        { id: uid(), col: 'todo',       title: 'Store Plaid access_token in PostgreSQL per user (replace in-memory)', tag: 'dev', assignee: 'P', deadline: '2026-09-20' },
+        { id: uid(), col: 'backlog',    title: 'Onboarding: question → number → Connect bank (no login first)', tag: 'product', assignee: 'P', deadline: '' },
+        { id: uid(), col: 'backlog',    title: 'Money Saved counter on Progress', tag: 'product', assignee: 'P', deadline: '' },
+        { id: uid(), col: 'backlog',    title: 'Gator character states (5 states, replaces score)', tag: 'design', assignee: 'B', deadline: '' },
+        { id: uid(), col: 'backlog',    title: 'Streak: days without slips (late fee, overdraft, missed payment)', tag: 'product', assignee: 'P', deadline: '' },
+        { id: uid(), col: 'backlog',    title: 'Push notifications from Plaid webhooks (payday, due date, unused sub)', tag: 'dev', assignee: 'P', deadline: '' },
+        { id: uid(), col: 'done',       title: 'Plaid sandbox end-to-end: server → tunnel → app', tag: 'dev', assignee: 'P', deadline: '' },
+        { id: uid(), col: 'done',       title: 'Frontend cleanup: 14 screens, 24 components, -8,932 lines', tag: 'dev', assignee: 'P', deadline: '' },
+        { id: uid(), col: 'done',       title: 'Insight engine: InsightCard on Progress, Because line on Learn', tag: 'product', assignee: 'P', deadline: '' },
+        { id: uid(), col: 'done',       title: 'App rename to MoneyGator in codebase',    tag: 'dev',       assignee: 'P', deadline: '' },
         { id: uid(), col: 'todo',       title: 'Product Hunt launch',                      tag: 'marketing', assignee: 'P', deadline: '2026-09-10' },
         { id: uid(), col: 'todo',       title: 'Onboarding flow (Stage 3.5)',              tag: 'product',   assignee: 'P', deadline: '2026-09-20' },
-        { id: uid(), col: 'todo',       title: 'Codebase refactor — remove dead code',    tag: 'dev',       assignee: 'P', deadline: '' },
+        { id: uid(), col: 'done',       title: 'Codebase refactor — remove dead code',    tag: 'dev',       assignee: 'P', deadline: '' },
         { id: uid(), col: 'todo',       title: 'Customer discovery with Aisha (ICP)',     tag: 'product',   assignee: 'B', deadline: '2026-09-05' },
         { id: uid(), col: 'backlog',    title: 'Privacy policy for App Store',            tag: 'legal',     assignee: 'T', deadline: '2026-10-01' },
         { id: uid(), col: 'backlog',    title: 'Stripe subscription billing setup',       tag: 'dev',       assignee: 'P', deadline: '' },
@@ -662,6 +714,7 @@
       ],
       founders: [
         { id: uid(), col: 'inprogress', title: 'Plaid contract — negotiate ramp terms',   tag: 'bizdev',    assignee: 'B', deadline: '2026-09-15' },
+        { id: uid(), col: 'todo',       title: 'Email Justin Guerrero (Plaid): extend ramp 9→12 mo, early termination clause', tag: 'bizdev', assignee: 'P', deadline: '2026-09-05' },
         { id: uid(), col: 'todo',       title: 'Investor follow-ups (20 VCs)',             tag: 'bizdev',    assignee: 'P', deadline: '2026-09-01' },
         { id: uid(), col: 'todo',       title: 'MoneyGator Inc. legal entity registration',tag: 'legal',    assignee: 'T', deadline: '' },
         { id: uid(), col: 'todo',       title: 'Fundraise strategy — post Plaid signature',tag: 'strategy', assignee: 'B', deadline: '' },
