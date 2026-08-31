@@ -2,6 +2,14 @@
   "_seed": 2,
   "general": [
     {
+      "id": "fidbdpaa",
+      "col": "todo",
+      "title": "SIM TEST 1788146351644",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
       "id": "mh5ebc82",
       "col": "inprogress",
       "title": "Plaid integration (Stage 4)",
