@@ -1,0 +1,287 @@
+{
+  "_seed": 2,
+  "general": [
+    {
+      "id": "mh5ebc82",
+      "col": "inprogress",
+      "title": "Plaid integration (Stage 4)",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": "2026-10-25"
+    },
+    {
+      "id": "iblnbsm8",
+      "col": "inprogress",
+      "title": "Wire Transactions, TransactionDetail, SubscriptionDetail, Notifications to live",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": "2026-09-02"
+    },
+    {
+      "id": "p6x1x255",
+      "col": "todo",
+      "title": "Plaid Link: real \"Connect bank\" button (needs Expo Dev Client)",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": "2026-09-15"
+    },
+    {
+      "id": "a45pmbzs",
+      "col": "todo",
+      "title": "Backend: /liabilities endpoint (credit card due dates, min payment)",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": "2026-09-08"
+    },
+    {
+      "id": "exahqubn",
+      "col": "todo",
+      "title": "CancelGuide screen: step-by-step unsubscribe per merchant",
+      "tag": "product",
+      "assignee": "P",
+      "deadline": "2026-09-12"
+    },
+    {
+      "id": "iszjxbgj",
+      "col": "todo",
+      "title": "Store Plaid access_token in PostgreSQL per user (replace in-memory)",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": "2026-09-20"
+    },
+    {
+      "id": "ua21d47b",
+      "col": "todo",
+      "title": "Product Hunt launch",
+      "tag": "marketing",
+      "assignee": "P",
+      "deadline": "2026-09-10"
+    },
+    {
+      "id": "zdj5tkbl",
+      "col": "todo",
+      "title": "Onboarding flow (Stage 3.5)",
+      "tag": "product",
+      "assignee": "P",
+      "deadline": "2026-09-20"
+    },
+    {
+      "id": "i1m7vbly",
+      "col": "todo",
+      "title": "Customer discovery with Aisha (ICP)",
+      "tag": "product",
+      "assignee": "B",
+      "deadline": "2026-09-05"
+    },
+    {
+      "id": "fotcxhnt",
+      "col": "backlog",
+      "title": "Onboarding: question → number → Connect bank (no login first)",
+      "tag": "product",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "de3suy8f",
+      "col": "backlog",
+      "title": "Money Saved counter on Progress",
+      "tag": "product",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "kpyly5hr",
+      "col": "backlog",
+      "title": "Gator character states (5 states, replaces score)",
+      "tag": "design",
+      "assignee": "B",
+      "deadline": ""
+    },
+    {
+      "id": "zet58ms3",
+      "col": "backlog",
+      "title": "Streak: days without slips (late fee, overdraft, missed payment)",
+      "tag": "product",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "2s62xvcu",
+      "col": "backlog",
+      "title": "Push notifications from Plaid webhooks (payday, due date, unused sub)",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "el9d0d88",
+      "col": "backlog",
+      "title": "Privacy policy for App Store",
+      "tag": "legal",
+      "assignee": "T",
+      "deadline": "2026-10-01"
+    },
+    {
+      "id": "que68wle",
+      "col": "backlog",
+      "title": "Stripe subscription billing setup",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "55at4u49",
+      "col": "backlog",
+      "title": "TestFlight beta launch",
+      "tag": "product",
+      "assignee": "P",
+      "deadline": "2026-10-15"
+    },
+    {
+      "id": "u3asuaju",
+      "col": "done",
+      "title": "Plaid sandbox end-to-end: server → tunnel → app",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "9el4b07i",
+      "col": "done",
+      "title": "Frontend cleanup: 14 screens, 24 components, -8,932 lines",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "gs8wva4g",
+      "col": "done",
+      "title": "Insight engine: InsightCard on Progress, Because line on Learn",
+      "tag": "product",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "n71xqfur",
+      "col": "done",
+      "title": "App rename to MoneyGator in codebase",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "3rya2vdo",
+      "col": "done",
+      "title": "Codebase refactor — remove dead code",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "7hffg2bo",
+      "col": "done",
+      "title": "moneygator.app website launch",
+      "tag": "marketing",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "xbivu8ag",
+      "col": "done",
+      "title": "200+ waitlist signups",
+      "tag": "marketing",
+      "assignee": "P",
+      "deadline": ""
+    }
+  ],
+  "founders": [
+    {
+      "id": "gv8winj3",
+      "col": "inprogress",
+      "title": "Plaid contract — negotiate ramp terms",
+      "tag": "bizdev",
+      "assignee": "B",
+      "deadline": "2026-09-15"
+    },
+    {
+      "id": "jifr2z5f",
+      "col": "todo",
+      "title": "Email Justin Guerrero (Plaid): extend ramp 9→12 mo, early termination clause",
+      "tag": "bizdev",
+      "assignee": "P",
+      "deadline": "2026-09-05"
+    },
+    {
+      "id": "che1xg5i",
+      "col": "todo",
+      "title": "Investor follow-ups (20 VCs)",
+      "tag": "bizdev",
+      "assignee": "P",
+      "deadline": "2026-09-01"
+    },
+    {
+      "id": "srxrz09d",
+      "col": "todo",
+      "title": "MoneyGator Inc. legal entity registration",
+      "tag": "legal",
+      "assignee": "T",
+      "deadline": ""
+    },
+    {
+      "id": "isehlg6q",
+      "col": "todo",
+      "title": "Fundraise strategy — post Plaid signature",
+      "tag": "strategy",
+      "assignee": "B",
+      "deadline": ""
+    },
+    {
+      "id": "x3udeglu",
+      "col": "backlog",
+      "title": "Cap table setup",
+      "tag": "finance",
+      "assignee": "T",
+      "deadline": ""
+    },
+    {
+      "id": "ylyf3dyl",
+      "col": "backlog",
+      "title": "Founder equity split agreement",
+      "tag": "legal",
+      "assignee": "B",
+      "deadline": ""
+    },
+    {
+      "id": "n283plc0",
+      "col": "done",
+      "title": "Pitch deck (12 slides, OpenVC format)",
+      "tag": "bizdev",
+      "assignee": "B",
+      "deadline": ""
+    },
+    {
+      "id": "he8mx22o",
+      "col": "done",
+      "title": "Investor outreach — 20 VCs cold email",
+      "tag": "bizdev",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "rky0fzyt",
+      "col": "done",
+      "title": "Plaid MSA reviewed",
+      "tag": "legal",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "hmm94x4x",
+      "col": "done",
+      "title": "OpenVC + AngelList registration",
+      "tag": "bizdev",
+      "assignee": "P",
+      "deadline": ""
+    }
+  ]
+}
