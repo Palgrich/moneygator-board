@@ -2,11 +2,11 @@
   "general": [
     {
       "id": "rnadlypt",
-      "col": "todo",
+      "col": "done",
       "title": "Fix income detection: only category Income counts (refund bug)",
       "tag": "dev",
       "assignee": "P",
-      "deadline": "2026-09-01"
+      "deadline": ""
     },
     {
       "id": "t3xlf1o7",
