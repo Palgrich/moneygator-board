@@ -2,6 +2,14 @@
   "_seed": 2,
   "general": [
     {
+      "id": "41qv7p2y",
+      "col": "todo",
+      "title": "SIM TEST 1788146656153",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
       "id": "fidbdpaa",
       "col": "todo",
       "title": "SIM TEST 1788146351644",
