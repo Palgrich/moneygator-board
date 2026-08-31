@@ -448,6 +448,27 @@
 
   .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
 
+
+  /* SYNC */
+  .sync-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    display: flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+  }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-muted); }
+  .sync-badge.ok .sync-dot { background: var(--green); }
+  .sync-badge.saving .sync-dot { background: var(--orange); animation: pulse 1s infinite; }
+  .sync-badge.err .sync-dot { background: var(--red); }
+  .sync-badge.err { color: #FCA5A5; border-color: rgba(239,68,68,0.4); cursor: pointer; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .token-hint { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 8px; }
+  .token-hint a { color: var(--cyan); }
+
   /* TAGS */
   .tag-product   { background: rgba(91,79,232,0.2);  color: #A78BFA; }
   .tag-dev       { background: rgba(165,243,252,0.15);color: var(--cyan); }
@@ -492,6 +513,7 @@
       <span class="topbar-tag">Team Board</span>
     </div>
     <div class="topbar-right">
+      <div class="sync-badge" id="sync-badge" onclick="onSyncBadgeClick()"><span class="sync-dot"></span><span id="sync-text">Connecting…</span></div>
       <button class="add-task-btn" onclick="openModal()">+ Add task</button>
       <button class="logout-btn" onclick="doLogout()">Log out</button>
     </div>
@@ -510,6 +532,25 @@
 
   <div class="board-view" id="view-founders">
     <div class="board" id="board-founders"></div>
+  </div>
+</div>
+
+<!-- TOKEN MODAL -->
+<div class="modal-overlay" id="token-modal">
+  <div class="modal">
+    <div class="modal-title">Connect shared storage</div>
+    <div class="form-group">
+      <label class="form-label">GitHub token</label>
+      <input type="password" class="form-input" id="f-token" placeholder="ghp_…"
+        onkeydown="if(event.key==='Enter')saveToken()">
+      <div class="token-hint">
+        Tasks are stored in the GitHub repo so you and Tanya see the same board.
+        Paste the token Pavel shared. It is saved only in this browser.
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="saveToken()">Connect</button>
+    </div>
   </div>
 </div>
 
@@ -598,6 +639,7 @@
   }
 
   function doLogout() {
+    clearInterval(pollTimer);
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
     document.getElementById('pwd-input').value = '';
@@ -612,29 +654,208 @@
     document.getElementById('view-founders').classList.toggle('active', tab === 'founders');
   }
 
-  // STORAGE
-  function saveBoards() { localStorage.setItem('mg_boards_v1', JSON.stringify(boards)); }
+  // ─── SHARED STORAGE (GitHub repo file) ─────────────────────────────────────
+  const GH_OWNER = 'Palgrich';
+  const GH_REPO  = 'moneygator-board';
+  const GH_PATH  = 'data/board.json';
+  const GH_API   = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`;
+  const POLL_MS  = 20000;
 
-  function loadBoards() {
-    const saved = localStorage.getItem('mg_boards_v1');
-    if (saved) {
-      boards = JSON.parse(saved);
-      applySeedUpdates();
-    } else {
-      boards = getDefaultBoards();
-      saveBoards();
-    }
-    buildColumns('general');
-    buildColumns('founders');
-    renderAll();
+  let remoteSha = null;
+  let saveTimer = null;
+  let pollTimer = null;
+  let isSaving  = false;
+  let dirty     = false;
+
+  function ghToken() { return localStorage.getItem('mg_gh_token') || ''; }
+  function ghHeaders() {
+    const h = { 'Accept': 'application/vnd.github+json' };
+    const t = ghToken();
+    if (t) h['Authorization'] = 'token ' + t;
+    return h;
   }
 
-  // Seed updates: add new cards / move known cards, once per version.
-  // Safe for localStorage users — never touches cards you created or edited.
+  function setSync(state, text) {
+    const b = document.getElementById('sync-badge');
+    b.className = 'sync-badge ' + state;
+    document.getElementById('sync-text').textContent = text;
+  }
+
+  function onSyncBadgeClick() {
+    const b = document.getElementById('sync-badge');
+    if (b.classList.contains('err')) {
+      localStorage.removeItem('mg_gh_token');
+      document.getElementById('token-modal').classList.add('open');
+    }
+  }
+
+  function saveToken() {
+    const t = document.getElementById('f-token').value.trim();
+    if (!t) return;
+    localStorage.setItem('mg_gh_token', t);
+    document.getElementById('token-modal').classList.remove('open');
+    loadBoards();
+  }
+
+  // b64 helpers that survive unicode (emoji, arrows)
+  const enc = (s) => btoa(unescape(encodeURIComponent(s)));
+  const dec = (s) => decodeURIComponent(escape(atob(s.replace(/\n/g, ''))));
+
+  async function fetchRemote() {
+    const r = await fetch(GH_API + '?t=' + Date.now(), { headers: ghHeaders(), cache: 'no-store' });
+    if (r.status === 404) return { boards: null, sha: null };
+    if (r.status === 401 || r.status === 403) throw new Error('auth');
+    if (!r.ok) throw new Error('http ' + r.status);
+    const j = await r.json();
+    return { boards: JSON.parse(dec(j.content)), sha: j.sha };
+  }
+
+  async function pushRemote(payload, sha) {
+    const body = { message: 'board: update', content: enc(JSON.stringify(payload, null, 2)) };
+    if (sha) body.sha = sha;
+    const r = await fetch(GH_API, { method: 'PUT', headers: { ...ghHeaders(), 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (r.status === 401 || r.status === 403) throw new Error('auth');
+    if (r.status === 409 || r.status === 422) throw new Error('conflict');
+    if (!r.ok) throw new Error('http ' + r.status);
+    const j = await r.json();
+    return j.content.sha;
+  }
+
+  // Public API used by the rest of the app
+  function saveBoards() {
+    localStorage.setItem('mg_boards_v1', JSON.stringify(boards)); // local cache
+    dirty = true;
+    setSync('saving', 'Saving…');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flushSave, 600);
+  }
+
+  async function flushSave() {
+    if (isSaving) { saveTimer = setTimeout(flushSave, 300); return; }
+    if (!dirty) return;
+    isSaving = true;
+    try {
+      remoteSha = await pushRemote(boards, remoteSha);
+      dirty = false;
+      setSync('ok', 'Saved');
+    } catch (e) {
+      if (e.message === 'conflict') {
+        // someone else saved first: pull, merge our cards in, retry
+        try {
+          const { boards: rb, sha } = await fetchRemote();
+          remoteSha = sha;
+          boards = mergeBoards(rb || { general: [], founders: [] }, boards);
+          remoteSha = await pushRemote(boards, remoteSha);
+          dirty = false;
+          renderAll();
+          setSync('ok', 'Saved');
+        } catch (e2) { setSync('err', 'Sync error, tap to reconnect'); }
+      } else if (e.message === 'auth') {
+        setSync('err', 'Bad token, tap to fix');
+      } else {
+        setSync('err', 'Offline, tap to retry');
+      }
+    } finally { isSaving = false; }
+  }
+
+  // Merge: union by id; for cards in both, prefer `local` (what this user just did)
+  function mergeBoards(remote, local) {
+    const out = { general: [], founders: [] };
+    for (const tab of ['general', 'founders']) {
+      const map = new Map();
+      for (const t of (remote[tab] || [])) map.set(t.id, t);
+      for (const t of (local[tab] || []))  map.set(t.id, t);
+      out[tab] = Array.from(map.values());
+    }
+    return out;
+  }
+
+  async function loadBoards() {
+    if (!ghToken()) {
+      document.getElementById('token-modal').classList.add('open');
+      setSync('err', 'Not connected');
+      // still show cached board so it isn't blank
+      const cached = localStorage.getItem('mg_boards_v1');
+      boards = cached ? JSON.parse(cached) : getDefaultBoards();
+      buildColumns('general'); buildColumns('founders'); renderAll();
+      return;
+    }
+
+    setSync('saving', 'Loading…');
+    try {
+      const { boards: rb, sha } = await fetchRemote();
+      remoteSha = sha;
+      if (rb) {
+        boards = rb;
+        // one-time: fold in any cards this browser created before shared storage existed
+        if (!localStorage.getItem('mg_migrated_shared')) {
+          const cached = localStorage.getItem('mg_boards_v1');
+          if (cached) {
+            const local = JSON.parse(cached);
+            const before = countAll(boards);
+            boards = mergeByTitle(boards, local);
+            if (countAll(boards) !== before) { dirty = true; }
+          }
+          localStorage.setItem('mg_migrated_shared', '1');
+        }
+        applySeedUpdates();
+      } else {
+        // first ever run: seed the repo file
+        const cached = localStorage.getItem('mg_boards_v1');
+        boards = cached ? JSON.parse(cached) : getDefaultBoards();
+        applySeedUpdates();
+        dirty = true;
+      }
+      localStorage.setItem('mg_boards_v1', JSON.stringify(boards));
+      buildColumns('general'); buildColumns('founders'); renderAll();
+      if (dirty) await flushSave(); else setSync('ok', 'Synced');
+      startPolling();
+    } catch (e) {
+      const cached = localStorage.getItem('mg_boards_v1');
+      boards = cached ? JSON.parse(cached) : getDefaultBoards();
+      buildColumns('general'); buildColumns('founders'); renderAll();
+      setSync('err', e.message === 'auth' ? 'Bad token, tap to fix' : 'Offline, tap to retry');
+    }
+  }
+
+  function countAll(b) { return (b.general||[]).length + (b.founders||[]).length; }
+
+  // Migration helper: add local cards whose title isn't on the remote yet
+  function mergeByTitle(remote, local) {
+    const out = { general: [...(remote.general||[])], founders: [...(remote.founders||[])] };
+    for (const tab of ['general', 'founders']) {
+      const titles = new Set(out[tab].map(t => t.title));
+      for (const t of (local[tab] || [])) {
+        if (!titles.has(t.title)) { out[tab].push(t); titles.add(t.title); }
+      }
+    }
+    return out;
+  }
+
+  function startPolling() {
+    clearInterval(pollTimer);
+    pollTimer = setInterval(async () => {
+      if (isSaving || dirty || dragId || editId) return;
+      if (document.getElementById('modal').classList.contains('open')) return;
+      try {
+        const { boards: rb, sha } = await fetchRemote();
+        if (rb && sha !== remoteSha) {
+          remoteSha = sha;
+          boards = rb;
+          localStorage.setItem('mg_boards_v1', JSON.stringify(boards));
+          renderAll();
+          setSync('ok', 'Updated');
+          setTimeout(() => setSync('ok', 'Synced'), 2000);
+        }
+      } catch { /* ignore transient poll errors */ }
+    }, POLL_MS);
+  }
+
+  // Seed updates: add new cards / move known cards, once per version (shared, so tracked in board.json)
   const SEED_VERSION = 2;
   function applySeedUpdates() {
-    const applied = Number(localStorage.getItem('mg_seed_version') || 1);
-    if (applied >= SEED_VERSION) return;
+    boards._seed = boards._seed || 1;
+    if (boards._seed >= SEED_VERSION) return;
 
     const titleIn = (tab, t) => boards[tab].some(x => x.title === t);
     const moveIfExists = (tab, title, col) => {
@@ -645,7 +866,6 @@
       if (!titleIn(tab, card.title)) boards[tab].unshift({ id: uid(), ...card });
     };
 
-    // v2 — Plaid sandbox milestone (Aug 30, 2026)
     moveIfExists('general', 'App rename to MoneyGator in codebase', 'done');
     moveIfExists('general', 'Codebase refactor — remove dead code', 'done');
     addIfMissing('general', { col: 'done', title: 'Plaid sandbox end-to-end: server → tunnel → app', tag: 'dev', assignee: 'P', deadline: '' });
@@ -663,8 +883,8 @@
     addIfMissing('general', { col: 'backlog', title: 'Push notifications from Plaid webhooks (payday, due date, unused sub)', tag: 'dev', assignee: 'P', deadline: '' });
     addIfMissing('founders', { col: 'todo', title: 'Email Justin Guerrero (Plaid): extend ramp 9→12 mo, early termination clause', tag: 'bizdev', assignee: 'P', deadline: '2026-09-05' });
 
-    localStorage.setItem('mg_seed_version', String(SEED_VERSION));
-    saveBoards();
+    boards._seed = SEED_VERSION;
+    dirty = true;
   }
 
   function buildColumns(tab) {
@@ -754,6 +974,7 @@
   // RENDER
   function renderAll() {
     ['general','founders'].forEach(tab => {
+      if (!Array.isArray(boards[tab])) boards[tab] = [];
       COLUMNS.forEach(col => {
         const container = document.getElementById(`cards-${tab}-${col}`);
         const colTasks = boards[tab].filter(t => t.col === col);
