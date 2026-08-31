@@ -1,20 +1,44 @@
 {
   "general": [
     {
+      "id": "rnadlypt",
+      "col": "todo",
+      "title": "Fix income detection: only category Income counts (refund bug)",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": "2026-09-01"
+    },
+    {
+      "id": "t3xlf1o7",
+      "col": "done",
+      "title": "All screens on live Plaid data (no mock left in UI)",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
+      "id": "0t6rdkwv",
+      "col": "done",
+      "title": "Data guardrails: exclude transfers, subscription filters, income pct, no duplicate action",
+      "tag": "dev",
+      "assignee": "P",
+      "deadline": ""
+    },
+    {
       "id": "mh5ebc82",
       "col": "inprogress",
-      "title": "Plaid integration (Stage 4)",
+      "title": "Plaid integration (Stage 4): sandbox complete, Link pending",
       "tag": "dev",
       "assignee": "P",
       "deadline": "2026-10-25"
     },
     {
       "id": "iblnbsm8",
-      "col": "inprogress",
+      "col": "done",
       "title": "Wire Transactions, TransactionDetail, SubscriptionDetail, Notifications to live",
       "tag": "dev",
       "assignee": "P",
-      "deadline": "2026-09-02"
+      "deadline": ""
     },
     {
       "id": "p6x1x255",
