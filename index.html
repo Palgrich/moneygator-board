@@ -513,7 +513,7 @@
       <span class="topbar-tag">Team Board</span>
     </div>
     <div class="topbar-right">
-      <div class="sync-badge" id="sync-badge" onclick="onSyncBadgeClick()"><span class="sync-dot"></span><span id="sync-text">Connecting…</span></div>
+      <div class="sync-badge" id="sync-badge" title="board v3" onclick="onSyncBadgeClick()"><span class="sync-dot"></span><span id="sync-text">Connecting…</span></div>
       <button class="add-task-btn" onclick="openModal()">+ Add task</button>
       <button class="logout-btn" onclick="doLogout()">Log out</button>
     </div>
@@ -683,14 +683,19 @@
 
   function onSyncBadgeClick() {
     const b = document.getElementById('sync-badge');
-    if (b.classList.contains('err')) {
+    if (!b.classList.contains('err')) return;
+    const txt = document.getElementById('sync-text').textContent || '';
+    if (txt.startsWith('Token') || txt.startsWith('Not connected')) {
       localStorage.removeItem('mg_gh_token');
+      document.getElementById('f-token').value = '';
       document.getElementById('token-modal').classList.add('open');
+    } else {
+      dirty = true; setSync('saving', 'Retrying…'); flushSave();
     }
   }
 
   function saveToken() {
-    const t = document.getElementById('f-token').value.trim();
+    const t = document.getElementById('f-token').value.replace(/\s+/g, '');
     if (!t) return;
     localStorage.setItem('mg_gh_token', t);
     document.getElementById('token-modal').classList.remove('open');
@@ -713,10 +718,22 @@
   async function pushRemote(payload, sha) {
     const body = { message: 'board: update', content: enc(JSON.stringify(payload, null, 2)) };
     if (sha) body.sha = sha;
-    const r = await fetch(GH_API, { method: 'PUT', headers: { ...ghHeaders(), 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    if (r.status === 401 || r.status === 403) throw new Error('auth');
-    if (r.status === 409 || r.status === 422) throw new Error('conflict');
-    if (!r.ok) throw new Error('http ' + r.status);
+    let r;
+    try {
+      r = await fetch(GH_API, { method: 'PUT', headers: { ...ghHeaders(), 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    } catch (netErr) {
+      console.error('[board] PUT network error', netErr);
+      throw new Error('network: ' + (netErr.message || 'blocked'));
+    }
+    if (r.status === 409) throw new Error('conflict');
+    if (!r.ok) {
+      let msg = '';
+      try { msg = (await r.json()).message || ''; } catch {}
+      console.error('[board] PUT failed', r.status, msg);
+      if (r.status === 401 || r.status === 403) throw new Error('auth: ' + r.status + ' ' + msg);
+      if (r.status === 422) throw new Error('conflict');
+      throw new Error('http ' + r.status + ' ' + msg);
+    }
     const j = await r.json();
     return j.content.sha;
   }
@@ -724,6 +741,7 @@
   // Public API used by the rest of the app
   function saveBoards() {
     localStorage.setItem('mg_boards_v1', JSON.stringify(boards)); // local cache
+    localStorage.setItem('mg_pending', '1');                       // survives refresh if PUT fails
     dirty = true;
     setSync('saving', 'Saving…');
     clearTimeout(saveTimer);
@@ -735,10 +753,13 @@
     if (!dirty) return;
     isSaving = true;
     try {
+      if (!remoteSha) { const cur = await fetchRemote(); remoteSha = cur.sha; }
       remoteSha = await pushRemote(boards, remoteSha);
       dirty = false;
+      localStorage.removeItem('mg_pending');
       setSync('ok', 'Saved');
     } catch (e) {
+      console.error('[board] save failed:', e.message);
       if (e.message === 'conflict') {
         // someone else saved first: pull, merge our cards in, retry
         try {
@@ -747,13 +768,14 @@
           boards = mergeBoards(rb || { general: [], founders: [] }, boards);
           remoteSha = await pushRemote(boards, remoteSha);
           dirty = false;
+          localStorage.removeItem('mg_pending');
           renderAll();
           setSync('ok', 'Saved');
-        } catch (e2) { setSync('err', 'Sync error, tap to reconnect'); }
-      } else if (e.message === 'auth') {
-        setSync('err', 'Bad token, tap to fix');
+        } catch (e2) { console.error('[board] merge-retry failed:', e2.message); setSync('err', 'Save failed: ' + e2.message); }
+      } else if (e.message.startsWith('auth')) {
+        setSync('err', 'Token rejected: ' + e.message.slice(6, 60) + ' (tap to fix)');
       } else {
-        setSync('err', 'Offline, tap to retry');
+        setSync('err', 'Save failed: ' + e.message.slice(0, 70) + ' (tap to retry)');
       }
     } finally { isSaving = false; }
   }
@@ -787,6 +809,11 @@
       remoteSha = sha;
       if (rb) {
         boards = rb;
+        // recover: a previous save failed and the page was refreshed → merge local (by id, local wins) and retry
+        if (localStorage.getItem('mg_pending') === '1') {
+          const cached = localStorage.getItem('mg_boards_v1');
+          if (cached) { boards = mergeBoards(rb, JSON.parse(cached)); dirty = true; }
+        }
         // one-time: fold in any cards this browser created before shared storage existed
         if (!localStorage.getItem('mg_migrated_shared')) {
           const cached = localStorage.getItem('mg_boards_v1');
