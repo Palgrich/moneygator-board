@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MoneyGator — Board</title>
 <style>
@@ -513,7 +516,7 @@
       <span class="topbar-tag">Team Board</span>
     </div>
     <div class="topbar-right">
-      <div class="sync-badge" id="sync-badge" title="board v3" onclick="onSyncBadgeClick()"><span class="sync-dot"></span><span id="sync-text">Connecting…</span></div>
+      <div class="sync-badge" id="sync-badge" title="board v4" onclick="onSyncBadgeClick()"><span class="sync-dot"></span><span id="sync-text">Connecting…</span></div>
       <button class="add-task-btn" onclick="openModal()">+ Add task</button>
       <button class="logout-btn" onclick="doLogout()">Log out</button>
     </div>
@@ -627,11 +630,18 @@
   let editId = null;
 
   // AUTH
+  const LOGIN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+  function enterApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadBoards();
+  }
+
   function doLogin() {
     if (document.getElementById('pwd-input').value === PASSWORD) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      loadBoards();
+      localStorage.setItem('mg_login_until', String(Date.now() + LOGIN_TTL_MS));
+      enterApp();
     } else {
       document.getElementById('login-error').style.display = 'block';
       document.getElementById('pwd-input').value = '';
@@ -639,6 +649,7 @@
   }
 
   function doLogout() {
+    localStorage.removeItem('mg_login_until');
     clearInterval(pollTimer);
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
@@ -1127,6 +1138,12 @@
   function uid() { return Math.random().toString(36).slice(2, 10); }
 
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // Auto-login if remembered
+  (function () {
+    const until = Number(localStorage.getItem('mg_login_until') || 0);
+    if (until > Date.now()) enterApp();
+  })();
 </script>
 </body>
 </html>
